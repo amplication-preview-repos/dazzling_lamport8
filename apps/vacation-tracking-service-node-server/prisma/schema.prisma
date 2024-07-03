@@ -1,0 +1,72 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model VacationPolicy {
+  createdAt   DateTime @default(now())
+  description String?
+  id          String   @id @default(cuid())
+  name        String?
+  updatedAt   DateTime @updatedAt
+  user        User?    @relation(fields: [userId], references: [id])
+  userId      String?
+}
+
+model VacationRule {
+  createdAt   DateTime @default(now())
+  description String?
+  id          String   @id @default(cuid())
+  policy      String?
+  title       String?
+  updatedAt   DateTime @updatedAt
+}
+
+model User {
+  createdAt        DateTime         @default(now())
+  email            String?          @unique
+  firstName        String?
+  id               String           @id @default(cuid())
+  lastName         String?
+  password         String
+  role             Role?            @relation(fields: [roleId], references: [id])
+  roleId           String?
+  roles            Json
+  updatedAt        DateTime         @updatedAt
+  username         String           @unique
+  vacationPolicies VacationPolicy[]
+}
+
+model Company {
+  createdAt   DateTime @default(now())
+  description String?
+  groups      Group[]
+  id          String   @id @default(cuid())
+  name        String?
+  updatedAt   DateTime @updatedAt
+}
+
+model Group {
+  company     Company? @relation(fields: [companyId], references: [id])
+  companyId   String?
+  createdAt   DateTime @default(now())
+  description String?
+  id          String   @id @default(cuid())
+  name        String?
+  updatedAt   DateTime @updatedAt
+}
+
+model Role {
+  createdAt   DateTime @default(now())
+  description String?
+  employee    String?
+  id          String   @id @default(cuid())
+  manager     String?
+  name        String?
+  updatedAt   DateTime @updatedAt
+  users       User[]
+}
